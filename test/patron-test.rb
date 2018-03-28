@@ -2,6 +2,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'pry'
 require './lib/patron.rb'
+require './lib/museum'
 
 class TestPatron < Minitest::Test
   def test_class_exists

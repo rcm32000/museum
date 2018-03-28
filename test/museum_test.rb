@@ -16,7 +16,7 @@ class Testmuseum < Minitest::Test
     museum.add_exhibit('Dead Sea Scrolls', 10)
     museum.add_exhibit('Gems and Minerals', 0)
 
-    expected = {'Dead Sea Scrolls' => 10, 'Gems and Minerals'=> 0}
+    expected = {'Dead Sea Scrolls' => [10, []], 'Gems and Minerals'=> [0, []]}
     assert_equal expected, museum.exhibits
   end
 
@@ -37,5 +37,34 @@ class Testmuseum < Minitest::Test
     dmns.admit(bob)
     dmns.admit(sally)
     assert_equal 20, dmns.revenue
+  end
+
+  def test_exhibit_tracking
+    dmns = Museum.new('Denver Museum of Nature and Science')
+    dmns.add_exhibit('Dead Sea Scrolls', 10)
+    dmns.add_exhibit('Gems and Minerals', 0)
+    dmns.add_exhibit('IMAX', 15)
+    bonnie = Patron.new('Bonnie')
+    bonnie.add_interest('Dead Sea Scrolls')
+    bonnie.add_interest('Gems and Minerals')
+    paul = Patron.new('Paul')
+    paul.add_interest('Dead Sea Scrolls')
+    paul.add_interest('IMAX')
+    teddy = Patron.new('Teddy')
+    teddy.add_interest('Dead Sea Scrolls')
+    teddy.add_interest('IMAX')
+    dmns.admit(bonnie)
+    dmns.admit(paul)
+    dmns.admit(teddy)
+
+    assert %w[Bonnie Paul Teddy], dmns.exhibits['Dead Sea Scrolls']
+    assert %w[Bonnie], dmns.exhibits['Gems and Minerals']
+    assert %w[Paul Teddy], dmns.exhibits['IMAX']
+
+    expected = ['Dead Sea Scrolls', 'IMAX', 'Gems and Minerals']
+    assert_equal expected, dmns.exhibits_by_attendees
+
+    dmns.remove_unpopular_exhibits(2)
+    assert_equal ['Dead Sea Scrolls', 'IMAX'], dmns.exhibits_by_attendees
   end
 end
